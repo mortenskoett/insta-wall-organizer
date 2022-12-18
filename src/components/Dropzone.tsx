@@ -22,10 +22,10 @@ const Dropzone = ({ onDrop, accept }: any) => {
     textAlign: 'center',
     fontSize: 'calc(5px + 2vmin)',
     padding: '20px',
-    border: isHover? '3px lightblue dashed' : '3px purple dashed',
+    border: isHover || isDragActive ? '3px lightblue dashed' : '3px purple dashed',
     width: '60%',
     margin: 'auto',
-    borderRadius: '25px',
+    borderRadius: '25px',
     MozUserSelect: "none",
     WebkitUserSelect: "none",
     msUserSelect: "none",
@@ -42,7 +42,7 @@ const Dropzone = ({ onDrop, accept }: any) => {
       <input className="dropzone-input" {...getInputProps()} />
       <div className="text-center">
         {isDragActive ? (
-          <p className="dropzone-content">Drop images here</p>
+          <p className="dropzone-content">Drop the image</p>
         ) : (
           <p className="dropzone-content">
             Drop images here, or click to select files

@@ -1,4 +1,6 @@
-import React, { CSSProperties, useCallback } from 'react';
+import React, { useCallback } from 'react';
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 import cuid from "cuid";
 
 import Dropzone from "../components/Dropzone";
@@ -15,6 +17,12 @@ const dummy_images: WallImageData[] = [
   { id: cuid(), src: d2 },
   { id: cuid(), src: d3 },
   { id: cuid(), src: d4 },
+  { id: cuid(), src: d4 },
+  { id: cuid(), src: d4 },
+  { id: cuid(), src: d3 },
+  { id: cuid(), src: d3 },
+  { id: cuid(), src: d4 },
+  { id: cuid(), src: d4 },
 ]
 
 const Homepage = () => {
@@ -29,7 +37,9 @@ const Homepage = () => {
         'image/png': ['.png'],
         'image/jpeg': ['.jpg', '.jpeg']
       }}></Dropzone>
-      <Wall images={dummy_images} />
+      <DndProvider backend={HTML5Backend}>
+        <Wall images={dummy_images} />
+      </DndProvider>
     </main>
   )
 }

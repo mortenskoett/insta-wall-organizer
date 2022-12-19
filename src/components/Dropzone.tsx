@@ -30,6 +30,7 @@ const Dropzone = ({ onDrop, accept }: any) => {
     WebkitUserSelect: "none",
     msUserSelect: "none",
     fontWeight: "bold",
+    cursor: 'grab',
   };
 
   return (

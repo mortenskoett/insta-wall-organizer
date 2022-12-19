@@ -38,8 +38,7 @@ export const Wall = ({ images }: WallProps) => {
 
 // Individual image render
 const Image = ({ id, src }: WallImageData) => {
-
-  // Handle image drag and drop
+  // Handle image drag
   const [{ isDragging }, drag] = useDrag(() => ({
     type: ItemTypes.IMAGE,
     collect: monitor => ({
@@ -47,15 +46,17 @@ const Image = ({ id, src }: WallImageData) => {
     }),
   }))
 
+  // Handle image drop
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ItemTypes.IMAGE,
-    drop: () => console.log("drop called"),
+    drop: () => console.log("drop called"), // here the logic to move the thing should be
     collect: monitor => ({
       isOver: monitor.isOver()
     })
   }),
   )
 
+  // Necessary to attach both drag and drop as ref to each image
   function attachRef(el: ConnectableElement) {
     drag(el)
     drop(el)
@@ -67,19 +68,20 @@ const Image = ({ id, src }: WallImageData) => {
     width: "33.333%",
     maxHeight: "auto",
     padding: "1px",
-    opacity: isDragging ? 0.3 : 1,
-    cursor: 'grabbing',
+    opacity: isOver || isDragging ? 0.4 : 1,
+    cursor: 'grab',
   }
 
   return (
     <div className="file-item" >
       <img className="file-img"
-        ref={attachRef} // image drag
+        ref={attachRef}
         src={src}
         alt={`img-${id}`}
         style={imageStyle}
       />
     </div>
+
   );
 };
 

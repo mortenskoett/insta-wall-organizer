@@ -1,6 +1,6 @@
 import React, { CSSProperties } from 'react';
 import { ItemTypes } from "../dnd/types"
-import { ConnectableElement, useDrag, useDrop } from 'react-dnd'
+import { DragPreviewImage, ConnectableElement, useDrag, useDrop } from 'react-dnd'
 
 
 export type WallImageData = {
@@ -8,7 +8,7 @@ export type WallImageData = {
   src: string,
 }
 
-export type WallProps = {
+type WallProps = {
   images: WallImageData[]
 }
 
@@ -39,7 +39,7 @@ export const Wall = ({ images }: WallProps) => {
 // Individual image render
 const Image = ({ id, src }: WallImageData) => {
   // Handle image drag
-  const [{ isDragging }, drag] = useDrag(() => ({
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: ItemTypes.IMAGE,
     collect: monitor => ({
       isDragging: monitor.isDragging(),
@@ -73,15 +73,17 @@ const Image = ({ id, src }: WallImageData) => {
   }
 
   return (
-    <div className="file-item" >
-      <img className="file-img"
-        ref={attachRef}
-        src={src}
-        alt={`img-${id}`}
-        style={imageStyle}
-      />
-    </div>
-
+    <>
+      <DragPreviewImage connect={preview} src={src} />
+      <div className="file-item" >
+        <img className="file-img"
+          ref={attachRef}
+          src={src}
+          alt={`img-${id}`}
+          style={imageStyle}
+        />
+      </div>
+    </>
   );
 };
 

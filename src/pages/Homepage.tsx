@@ -14,10 +14,10 @@ import d4 from '../resources/images/dummy/d4.jpg';
 
 // FIXME: Change when dropzone works
 const dummy_images: WallImageData[] = [
-  { id: cuid(), src: d1 },
-  { id: cuid(), src: d2 },
-  { id: cuid(), src: d3 },
-  { id: cuid(), src: d4 },
+  { id: "0", src: d1 },
+  { id: "1", src: d2 },
+  { id: "2", src: d3 },
+  { id: "3", src: d4 },
   { id: cuid(), src: d4 },
   { id: cuid(), src: d4 },
   { id: cuid(), src: d3 },

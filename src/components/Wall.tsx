@@ -1,6 +1,7 @@
 import React, { CSSProperties, useState } from 'react';
 import { ItemTypes } from "../dnd/types"
 import { DragPreviewImage, ConnectableElement, useDrag, useDrop } from 'react-dnd'
+import cuid from 'cuid';
 
 
 export type WallImageData = {
@@ -13,37 +14,38 @@ type WallProps = {
 }
 
 type ImageProps = {
+  index: number
   image: WallImageData
   onDrop: Function
 }
 
 // Swap two images in the array
 const swap = (idx1: number, idx2: number, images: WallImageData[]): WallImageData[] => {
-  console.log("before:", images[0], images[1]);
-  const arr = [...images];
-  [arr[idx1], arr[idx2]] = [arr[idx2], arr[idx1]];
-  console.log("after:", arr[0], arr[1]);
-  return arr
+  const arr = Array.from(images);
+  // console.log("before:", arr.map((e, i) => i + ":" + e.id)); // DEBUGGING
+  const temp = arr[idx1];
+  arr[idx1] = arr[idx2];
+  arr[idx2] = temp;
+  // console.log("after:", arr.map((e, i) => i + ":" + e.id)); // DEBUGGING
+  return arr;
 }
 
 // Complete wall render
 export const Wall = ({ images }: WallProps) => {
   const [wallImages, setWallimages] = useState(images);
 
-  const handleImageReordering = (imageId1: string, imageId2: string) => {
-    console.log("Image ondrop function was called with: ", imageId1, imageId2);
-    const idx1 = wallImages.findIndex(img => img.id === imageId1);
-    const idx2 = wallImages.findIndex(img => img.id === imageId2);
+  const handleImageReordering = (idx1: number, idx2: number) => {
     const reordered = swap(idx1, idx2, wallImages);
     setWallimages(reordered);
   }
 
-  const renderImage = (wallImageData: WallImageData, onImageDrop: Function) => {
+  const renderImage = (index: number, wallImageData: WallImageData, onImageDrop: Function) => {
     return (
       <Image
+        index={index}
         image={wallImageData}
         onDrop={onImageDrop}
-        key={`${wallImageData.id}-image`}
+        key={`${cuid()}-image`} // New key everytime to force rerender of whole array
       />
     );
   }
@@ -53,7 +55,7 @@ export const Wall = ({ images }: WallProps) => {
       <section
         className="image-list"
         style={imageListStyle}>
-        {wallImages.map((img) => renderImage(img, handleImageReordering))}
+        {wallImages.map((img, i) => renderImage(i, img, handleImageReordering))}
       </section>
     </div>
   )
@@ -61,22 +63,22 @@ export const Wall = ({ images }: WallProps) => {
 
 // The image on which another was dropped
 interface DropResult {
-  id: string
+  dropIndex: number
 }
 
 // Individual image render
-const Image = ({ image, onDrop }: ImageProps) => {
+const Image = ({ index, image, onDrop }: ImageProps) => {
   const { id, src } = image;
 
   // Handle image drag
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: ItemTypes.IMAGE,
-    item: { id },
+    item: { index },
     end: (item, monitor) => {
       const dropResult = monitor.getDropResult<DropResult>() // Get DropResult from dnd
       if (item && dropResult) {
-        // console.log(`You dropped ${item.id} into ${dropResult.id}!`)
-        onDrop(item.id, dropResult.id);
+        console.log(`You dropped ${item.index} into ${dropResult.dropIndex}!`)
+        onDrop(item.index, dropResult.dropIndex);
       }
     },
     collect: monitor => ({
@@ -87,7 +89,7 @@ const Image = ({ image, onDrop }: ImageProps) => {
   // Handle image drop
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ItemTypes.IMAGE,
-    drop: () => ({ id: id }), // Put image id in dnd DropResult
+    drop: () => ({ dropIndex: index }), // Put image index in dnd DropResult
     collect: monitor => ({
       isOver: monitor.isOver(),
     })

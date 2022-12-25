@@ -1,25 +1,43 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useState } from 'react';
 import { ItemTypes } from "../dnd/types"
 import { DragPreviewImage, ConnectableElement, useDrag, useDrop } from 'react-dnd'
 
 
 export type WallImageData = {
-  id: string,
-  src: string,
+  id: string
+  src: string
 }
 
 type WallProps = {
   images: WallImageData[]
 }
 
+type ImageProps = {
+  image: WallImageData
+  onDrop: Function
+}
+
+// Swap two images in the array
+const swap = (idx1: number, idx2: number, images: WallImageData[]): WallImageData[] => {
+  const arr = [...images];
+  [arr[idx1], arr[idx2]] = [arr[idx2], arr[idx1]];
+  return arr
+}
+
 // Complete wall render
 export const Wall = ({ images }: WallProps) => {
-  const renderImage = (image: WallImageData) => {
+  const [wallImages, setWallimages] = useState(images);
+
+  const updateImageState = () => {
+    console.log("hello image drop function was called");
+  }
+
+  const renderImage = (wallImageData: WallImageData, onImageDrop: Function) => {
     return (
       <Image
-        id={image.id}
-        src={image.src}
-        key={`${image.id}-image`}
+        image={wallImageData}
+        onDrop={onImageDrop}
+        key={`${wallImageData.id}-image`}
       />
     );
   }
@@ -29,18 +47,31 @@ export const Wall = ({ images }: WallProps) => {
       <section
         className="image-list"
         style={imageListStyle}>
-        {images.map(renderImage)}
+        {images.map((img) => renderImage(img, updateImageState))}
       </section>
     </div>
   )
 }
 
+interface DropResult {
+  id: string
+}
 
 // Individual image render
-const Image = ({ id, src }: WallImageData) => {
+const Image = ({ image, onDrop }: ImageProps) => {
+  const { id, src } = image;
+
   // Handle image drag
   const [{ isDragging }, drag, preview] = useDrag(() => ({
     type: ItemTypes.IMAGE,
+    item: { id },
+    end: (item, monitor) => {
+      const dropResult = monitor.getDropResult<DropResult>()
+      if (item && dropResult) {
+        console.log(`You dropped ${item.id} into ${dropResult.id}!`)
+        onDrop();
+      }
+    },
     collect: monitor => ({
       isDragging: monitor.isDragging(),
     }),

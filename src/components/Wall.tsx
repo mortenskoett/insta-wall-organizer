@@ -19,8 +19,10 @@ type ImageProps = {
 
 // Swap two images in the array
 const swap = (idx1: number, idx2: number, images: WallImageData[]): WallImageData[] => {
+  console.log("before:", images[0], images[1]);
   const arr = [...images];
   [arr[idx1], arr[idx2]] = [arr[idx2], arr[idx1]];
+  console.log("after:", arr[0], arr[1]);
   return arr
 }
 
@@ -28,8 +30,12 @@ const swap = (idx1: number, idx2: number, images: WallImageData[]): WallImageDat
 export const Wall = ({ images }: WallProps) => {
   const [wallImages, setWallimages] = useState(images);
 
-  const updateImageState = () => {
-    console.log("hello image drop function was called");
+  const updateImageState = (imageId1: string, imageId2: string) => {
+    console.log("Image ondrop function was called with: ", imageId1, imageId2);
+    const idx1 = wallImages.findIndex(img => img.id === imageId1);
+    const idx2 = wallImages.findIndex(img => img.id === imageId2);
+    const reordered = swap(idx1, idx2, wallImages);
+    setWallimages(reordered);
   }
 
   const renderImage = (wallImageData: WallImageData, onImageDrop: Function) => {
@@ -53,6 +59,7 @@ export const Wall = ({ images }: WallProps) => {
   )
 }
 
+// The image on which another was dropped
 interface DropResult {
   id: string
 }
@@ -66,10 +73,10 @@ const Image = ({ image, onDrop }: ImageProps) => {
     type: ItemTypes.IMAGE,
     item: { id },
     end: (item, monitor) => {
-      const dropResult = monitor.getDropResult<DropResult>()
+      const dropResult = monitor.getDropResult<DropResult>() // Get DropResult from dnd
       if (item && dropResult) {
-        console.log(`You dropped ${item.id} into ${dropResult.id}!`)
-        onDrop();
+        // console.log(`You dropped ${item.id} into ${dropResult.id}!`)
+        onDrop(item.id, dropResult.id);
       }
     },
     collect: monitor => ({
@@ -80,9 +87,9 @@ const Image = ({ image, onDrop }: ImageProps) => {
   // Handle image drop
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ItemTypes.IMAGE,
-    drop: () => console.log("drop called"), // here the logic to move the thing should be
+    drop: () => ({ id: id }), // Put image id in dnd DropResult
     collect: monitor => ({
-      isOver: monitor.isOver()
+      isOver: monitor.isOver(),
     })
   }),
   )

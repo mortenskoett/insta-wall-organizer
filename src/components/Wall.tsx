@@ -30,7 +30,7 @@ const swap = (idx1: number, idx2: number, images: WallImageData[]): WallImageDat
 export const Wall = ({ images }: WallProps) => {
   const [wallImages, setWallimages] = useState(images);
 
-  const updateImageState = (imageId1: string, imageId2: string) => {
+  const handleImageReordering = (imageId1: string, imageId2: string) => {
     console.log("Image ondrop function was called with: ", imageId1, imageId2);
     const idx1 = wallImages.findIndex(img => img.id === imageId1);
     const idx2 = wallImages.findIndex(img => img.id === imageId2);
@@ -53,7 +53,7 @@ export const Wall = ({ images }: WallProps) => {
       <section
         className="image-list"
         style={imageListStyle}>
-        {images.map((img) => renderImage(img, updateImageState))}
+        {wallImages.map((img) => renderImage(img, handleImageReordering))}
       </section>
     </div>
   )

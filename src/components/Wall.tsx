@@ -1,9 +1,13 @@
 import React, { CSSProperties, useState } from 'react';
 import { ItemTypes } from "../dnd/types"
 import { DragPreviewImage, ConnectableElement, useDrag, useDrop } from 'react-dnd'
-import image_placeholder from '../resources/images/img_placeholder-0.5.png';
+import useWindowDimensions from '../utils/window';
+import imagePlaceholder04 from '../resources/images/img_placeholder-0.4.png';
+import imagePlaceholder05 from '../resources/images/img_placeholder-0.5.png';
+import imagePlaceholder07 from '../resources/images/img_placeholder-0.7.png';
+import imagePlaceholder08 from '../resources/images/img_placeholder-0.8.png';
+import imagePlaceholderFull from '../resources/images/img_placeholder.png';
 import cuid from 'cuid';
-
 
 export type WallImageData = {
   id: string
@@ -19,6 +23,7 @@ type ImageProps = {
   image: WallImageData
   onDrop: Function
 }
+
 
 // Swap two images in the array
 const swap = (idx1: number, idx2: number, images: WallImageData[]): WallImageData[] => {
@@ -103,6 +108,29 @@ const Image = ({ index, image, onDrop }: ImageProps) => {
     drop(el)
   }
 
+  // Get a somewhat fitting placeholder image size for different window sizes
+  const UsePlaceholderImage = (): string => {
+    const { width } = useWindowDimensions()
+    console.log(width);
+    if (width < 800) {
+      return imagePlaceholder04;
+    }
+    else if (width < 1100) {
+      return imagePlaceholder05;
+    }
+    else if (width < 1500) {
+      return imagePlaceholder07;
+    }
+    else if (width < 2100) {
+      return imagePlaceholder08;
+    }
+    else {
+      return imagePlaceholderFull;
+    }
+  }
+
+  console.log("PLACEHOLDER", UsePlaceholderImage());
+
   const imageStyle: CSSProperties = {
     float: "left",
     display: "inline",
@@ -115,7 +143,7 @@ const Image = ({ index, image, onDrop }: ImageProps) => {
 
   return (
     <>
-      <DragPreviewImage connect={preview} src={image_placeholder} />
+      <DragPreviewImage connect={preview} src={UsePlaceholderImage()} />
       <div className="file-item" >
         <img className="file-img"
           ref={attachRef}

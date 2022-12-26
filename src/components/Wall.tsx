@@ -1,6 +1,7 @@
 import React, { CSSProperties, useState } from 'react';
 import { ItemTypes } from "../dnd/types"
 import { DragPreviewImage, ConnectableElement, useDrag, useDrop } from 'react-dnd'
+import image_placeholder from '../resources/images/img_placeholder-0.5.png';
 import cuid from 'cuid';
 
 
@@ -114,7 +115,7 @@ const Image = ({ index, image, onDrop }: ImageProps) => {
 
   return (
     <>
-      <DragPreviewImage connect={preview} src={src} />
+      <DragPreviewImage connect={preview} src={image_placeholder} />
       <div className="file-item" >
         <img className="file-img"
           ref={attachRef}

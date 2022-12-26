@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import cuid from "cuid";
@@ -27,10 +27,25 @@ const dummy_images: WallImageData[] = [
 ]
 
 const Homepage = () => {
+  const [images, setImages] = useState(dummy_images);
+
   const onDropzoneDrop = useCallback((acceptedFiles: any): void => {
-    // Implement this: https://blog.logrocket.com/drag-and-drop-react-dnd/
-    console.log(acceptedFiles);
-  }, []);
+    const uploadedImages: WallImageData[] =
+      acceptedFiles.map((file: Blob | MediaSource) => {
+        return {
+          id: cuid(),
+          src: URL.createObjectURL(file),
+        }
+      });
+
+    console.log("Uploaded files:", uploadedImages);
+    setImages(uploadedImages);
+  }, [])
+
+  useEffect(() => {
+    // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
+    return () => images.forEach(img => URL.revokeObjectURL(img.src));
+  }, [])
 
   return (
     <main className="homepage" >
@@ -39,7 +54,7 @@ const Homepage = () => {
         'image/jpeg': ['.jpg', '.jpeg']
       }}></Dropzone>
       <DndProvider backend={HTML5Backend}>
-        <Wall images={dummy_images}/>
+        <Wall images={images} key={cuid()} />
       </DndProvider>
     </main>
   )

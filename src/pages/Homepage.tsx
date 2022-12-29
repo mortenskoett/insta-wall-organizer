@@ -11,7 +11,6 @@ import d2 from '../resources/images/dummy/d2.jpg';
 import d3 from '../resources/images/dummy/d3.jpg';
 import d4 from '../resources/images/dummy/d4.jpg';
 
-
 // FIXME: Change when dropzone works
 const dummy_images: WallImageData[] = [
   { id: "0", src: d1 },
@@ -42,10 +41,11 @@ const Homepage = () => {
     setImages(uploadedImages);
   }, [])
 
+  // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
   useEffect(() => {
-    // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
-    return () => images.forEach(img => URL.revokeObjectURL(img.src));
-  }, [])
+    images.forEach(img => URL.revokeObjectURL(img.src));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <main className="homepage" >

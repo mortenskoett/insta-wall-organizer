@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import { TouchBackend } from 'react-dnd-touch-backend'
 import cuid from "cuid";
 
 import Dropzone from "../components/Dropzone";
@@ -17,13 +18,13 @@ const dummy_images: WallImageData[] = [
   { id: "1", src: d2 },
   { id: "2", src: d3 },
   { id: "3", src: d4 },
-  { id: cuid(), src: d4 },
-  { id: cuid(), src: d4 },
-  { id: cuid(), src: d3 },
-  { id: cuid(), src: d3 },
-  { id: cuid(), src: d4 },
-  { id: cuid(), src: d4 },
 ]
+
+const isTouchDevice = () => {
+  return (('ontouchstart' in window) ||
+    (navigator.maxTouchPoints > 0) ||
+    (navigator.maxTouchPoints > 0));
+}
 
 const Homepage = () => {
   const [images, setImages] = useState(dummy_images);
@@ -53,7 +54,7 @@ const Homepage = () => {
         'image/png': ['.png'],
         'image/jpeg': ['.jpg', '.jpeg']
       }}></Dropzone>
-      <DndProvider backend={HTML5Backend}>
+      <DndProvider backend={isTouchDevice() ? TouchBackend : HTML5Backend}>
         <Wall images={images} key={cuid()} />
       </DndProvider>
     </main>

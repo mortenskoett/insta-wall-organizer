@@ -1,5 +1,5 @@
 # insta-wall-organizer
-Organize your Insta wall.
+Organize your Insta wall. A fun little drag n drop prototype to pre-organize my friends instagram wall before uploading images.
 
 Running static ui:  https://insta-wall-organizer.netlify.app/. 
 
